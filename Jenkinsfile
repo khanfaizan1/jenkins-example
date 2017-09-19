@@ -2,8 +2,16 @@ pipeline {
   agent any
   stages {
     stage('Build') {
+      agent {
+          docker {
+              image 'maven:3-alpine'
+              args '-v /home/faizan/docker/.m2:/root/.m2'
+          }
+      }
+
       steps {
-        sh 'echo Build'
+          sh 'mvn -B -DskipTests clean packages'
+          stash name: 'war', include: 'target/**'
       }
     }
     stage('Backend') {
